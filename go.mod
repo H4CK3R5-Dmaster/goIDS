@@ -1,4 +1,4 @@
-module github.com/google
+module ids/project
 
 go 1.19
 
