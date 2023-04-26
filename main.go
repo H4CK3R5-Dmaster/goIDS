@@ -3,9 +3,32 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"strings"
+
+	"github.com/sendgrid/sendgrid-go"
+	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
+
+func sendEmail() {
+	from := mail.NewEmail("INTRUSION DETECTION SYSTEM", "sfekaier@gmail.com")
+	subject := "CODE RED ALERT : INTRUSION DETECTED"
+	to := mail.NewEmail("IDS DEVELOPPERS", "sfekaier@gmail.com")
+	plainTextContent := "Warning : check ids logs now"
+	htmlContent := "<strong>It's a important message !</strong>"
+	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
+	client := sendgrid.NewSendClient(os.Getenv("API"))
+	response, err := client.Send(message)
+
+	if err != nil {
+        log.Println(err)
+    } else {
+        fmt.Println(response.StatusCode)
+        fmt.Println(response.Body)
+        fmt.Println(response.Headers)
+    }
+}
 
 //isSuspectLine est une fonction qui lorsque l'on lui donne un string il vérifie si le string contient des mots suspect si c'est le cas il retourne vrai sinon faux
 func isSuspectLine(line string) bool {
@@ -54,6 +77,7 @@ func main()  {
 		//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
 		if isSuspectLine(line) {
 			fmt.Println("Intrusion détéctée dans les logs : ", line)
+			sendEmail()
 
 		}
 	}
