@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func isSuspicious(line string) bool {
+func isSuspectLine(line string) bool {
 	
 	if strings.Contains(line, "POST /auth/login/") && strings.Contains(line, "401") {
 		return true
@@ -33,7 +33,7 @@ func main()  {
 	for scanlog.Scan() {
 		line := scanlog.Text()
 
-		if isSuspicious(line) {
+		if isSuspectLine(line) {
 			fmt.Println("Intrusion détéctée dans les logs : ", line)
 
 		}
