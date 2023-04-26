@@ -1,4 +1,4 @@
-package main
+/*package tester
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	"github.com/google/gopacket/pcap"
 )
 
-func main() {
+func tester() {
 	devices, err := pcap.FindAllDevs()
 	if err != nil {
 		log.Fatalf("error retrieving devices - %v", err)
@@ -22,4 +22,4 @@ func main() {
 			fmt.Printf("\tInterface NetMask: %s\n", iaddress.Netmask)
 		}
 	}
-}
+}*/
