@@ -16,6 +16,9 @@ func isSuspectLine(line string) bool {
 	if strings.Contains(line, "sqlmap") {
 		return true
 	}
+	if strings.Contains(line, "gobuster") {
+		return true
+	}
 
 	return false
 }
