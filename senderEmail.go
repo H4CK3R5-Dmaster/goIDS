@@ -29,6 +29,9 @@ func sendEmail() {
 	//message est la variable qui réuni les variables en un mail
 	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
 
+	//set une template dynamic
+	message.SetTemplateID("")
+
 	//client va utiliser l'API sendgrid et se préparer à l'envoie du mail
 	client := sendgrid.NewSendClient(os.Getenv("API"))
 
