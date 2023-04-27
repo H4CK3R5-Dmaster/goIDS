@@ -31,6 +31,7 @@ func sendEmail() {
 
 	//set une template dynamic
 	message.SetTemplateID("")
+	
 
 	//client va utiliser l'API sendgrid et se préparer à l'envoie du mail
 	client := sendgrid.NewSendClient(os.Getenv("API"))
