@@ -1,0 +1,19 @@
+FAIT: 
+
+base et lecture des logs OK
+sender email OK
+détecter les lignes suspect OK
+
+
+EN COURS :
+
+sniffer EN COURS
+Ban IP EN COURS
+
+A FAIRE :
+
+hosts.allow / deny
+dashboard
+enregistrer pcap wireshark
+logs 
+api ip finder
