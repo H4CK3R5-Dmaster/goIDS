@@ -6,10 +6,8 @@ import (
 	"os"
 )
 
+func main() {
 
-
-func main()  {
-	
 	//accessLog est notre variable qui contient le fichier log et err sera la variable d'erreur
 	accessLog, err := os.Open("/var/log/apache2/access.log")
 
@@ -21,7 +19,7 @@ func main()  {
 
 	//on ferme le fichier accesslog
 	defer accessLog.Close()
-	
+
 	//scanlog nous permet de faire un scan dans le fichier log
 	scanlog := bufio.NewScanner(accessLog)
 
@@ -34,7 +32,7 @@ func main()  {
 		//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
 		if isSuspectLine(line) {
 			fmt.Println("Intrusion détéctée dans les logs : ", line)
-			sendEmail()
+			//sendEmail()
 
 		}
 	}
