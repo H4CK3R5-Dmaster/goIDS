@@ -49,6 +49,7 @@ func main() {
 
 		//line récupère ces lignes sous forme de texte
 		line := scanlog.Text()
+		fmt.Println(line)
 
 		//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
 		if isSuspectLine(line) {
