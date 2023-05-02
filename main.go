@@ -79,7 +79,7 @@ func sendEmail() {
 func main() {
 
 	//accessLog est notre variable qui contient le fichier log et err sera la variable d'erreur
-	accessLog, err := os.Open("./tâches.txt")
+	accessLog, err := os.Open("/var/log/apache2/access.log")
 
 	//si l'erreur n'est pas null alors on print l'erreur
 	if err != nil {
