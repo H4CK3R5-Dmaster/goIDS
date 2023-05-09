@@ -11,7 +11,7 @@ import (
 )
 
 var filter = flag.String("filter", "", "BPF filter for capture")
-var iface = flag.String("iface", "en0", "Select interface where to capture")
+var iface = flag.String("iface", "ens33", "Select interface where to capture")
 var snaplen = flag.Int("snaplen", 1024, "Maximun sise to read for each packet")
 var promisc = flag.Bool("promisc", false, "Enable promiscuous mode")
 var timeoutT = flag.Int("timeout", 30, "Connection Timeout in seconds")
