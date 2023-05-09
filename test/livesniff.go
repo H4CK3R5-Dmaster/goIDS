@@ -24,7 +24,6 @@ func main() {
 
 	var timeout time.Duration = time.Duration(*timeoutT) * time.Second
 
-	// Opening Device
 	handle, err := pcap.OpenLive(*iface, int32(*snaplen), *promisc, timeout)
 	if err != nil {
 		log.Fatal(err)
@@ -32,7 +31,6 @@ func main() {
 
 	defer handle.Close()
 
-	// Applying BPF Filter if it exists
 	if *filter != "" {
 		log.Println("applying filter ", *filter)
 		err := handle.SetBPFFilter(*filter)

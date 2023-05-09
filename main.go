@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
+	"regexp"
 	"strings"
 
 	"github.com/sendgrid/sendgrid-go"
@@ -19,7 +21,9 @@ type EmailData struct {
 	warninglevel int
 }
 
-func isSuspectLine(line string) bool {
+func isSuspectLine(line string, ip string) bool {
+
+	//maxcount := 3
 
 	//on regarde si notre string contient une erreur 401 après un POST depuis le login
 	if strings.Contains(line, "POST /auth/login/") && strings.Contains(line, "401") {
@@ -78,8 +82,9 @@ func sendEmail() {
 
 func main() {
 
+	exec.Command("clear")
 	//accessLog est notre variable qui contient le fichier log et err sera la variable d'erreur
-	accessLog, err := os.Open("/var/log/apache2/access.log")
+	accessLog, err := os.Open("./var/log/apache2/access.log")
 
 	//si l'erreur n'est pas null alors on print l'erreur
 	if err != nil {
@@ -98,10 +103,13 @@ func main() {
 
 		//line récupère ces lignes sous forme de texte
 		line := scanlog.Text()
-		fmt.Println(line)
+		//fmt.Println(line)
+		re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
+		match := re.FindString(line)
+		fmt.Println(match)
 
 		//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
-		if isSuspectLine(line) {
+		if isSuspectLine(line, match) {
 			fmt.Println("Intrusion détéctée dans les logs : ", line)
 			//sendEmail()
 

@@ -13,7 +13,7 @@ Ban IP EN COURS
 
 A FAIRE :
 
-hosts.allow / deny
+hosts.allow / deny 
 dashboard
 enregistrer pcap wireshark
 logs 
