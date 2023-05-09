@@ -10,3 +10,4 @@ Ce logiciel comporte un système qui permet d'analyser le réseau dans le port 8
 
 - [pkg.go.dev (gopacket)](https://pkg.go.dev/github.com/google/gopacket)
 - [devdungeon](https://www.devdungeon.com/content/packet-capture-injection-and-analysis-gopacket)
+- [cameronroberts (API)](https://cameronroberts.dev/posts/consuming-restapi-golang/)

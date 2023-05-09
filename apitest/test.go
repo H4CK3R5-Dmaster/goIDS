@@ -20,7 +20,7 @@ type Iplocation struct {
 func main() {
 	log.Println("call API...")
 	apikey := "08ce3f5b88fa4d0d9c2b601afecdc350"
-	iplocator := "50.20.20.10"
+	iplocator := "213.152.0.65"
 	response, err := http.Get("https://api.ipgeolocation.io/ipgeo?apiKey=" + apikey + "&ip=" + iplocator)
 
 	if err != nil {
