@@ -22,10 +22,19 @@ import (
 
 type EmailData struct {
 	Iptracked    string
-	Located      string
+	Locatedip    []Located
 	Useragent    string
 	Browser      string
 	Warninglevel int
+}
+
+type Located struct {
+	Continent_code string
+	Continent_name string
+	Name_country   string
+	Code_country   string
+	City_name      string
+	Organiz        string
 }
 
 type Iplocation struct {
@@ -156,6 +165,7 @@ func Iplocator(ip string) {
 	log.Println(responseObject.Country_code)
 	log.Println(responseObject.Country_name)
 	log.Println(responseObject.City)
+
 }
 
 func main() {
