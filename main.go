@@ -123,7 +123,7 @@ func main() {
 	exec.Command("clear")
 	//accessLog est notre variable qui contient le fichier log et err sera la variable d'erreur
 	for {
-		accessLog, err := os.Open("./var/log/apache2/access.log")
+		accessLog, err := os.Open("/var/log/apache2/access.log")
 		//sniffer()
 
 		//si l'erreur n'est pas null alors on print l'erreur
