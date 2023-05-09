@@ -25,12 +25,6 @@ type EmailData struct {
 	warninglevel int
 }
 
-var filter = flag.String("filter", "", "BPF filter for capture")
-var iface = flag.String("iface", "en0", "Select interface where to capture")
-var snaplen = flag.Int("snaplen", 1024, "Maximun sise to read for each packet")
-var promisc = flag.Bool("promisc", false, "Enable promiscuous mode")
-var timeoutT = flag.Int("timeout", 30, "Connection Timeout in seconds")
-
 func isSuspectLine(line string, ip string) bool {
 
 	//maxcount := 3
@@ -90,6 +84,11 @@ func sendEmail() {
 	}
 }
 func sniffer() {
+	var filter = flag.String("filter", "", "BPF filter for capture")
+	var iface = flag.String("iface", "en0", "Select interface where to capture")
+	var snaplen = flag.Int("snaplen", 1024, "Maximun sise to read for each packet")
+	var promisc = flag.Bool("promisc", false, "Enable promiscuous mode")
+	var timeoutT = flag.Int("timeout", 30, "Connection Timeout in seconds")
 	log.Println("start")
 	defer log.Println("end")
 
@@ -123,41 +122,44 @@ func main() {
 
 	exec.Command("clear")
 	//accessLog est notre variable qui contient le fichier log et err sera la variable d'erreur
-	accessLog, err := os.Open("./var/log/apache2/access.log")
-	sniffer()
+	for {
+		accessLog, err := os.Open("./var/log/apache2/access.log")
+		//sniffer()
 
-	//si l'erreur n'est pas null alors on print l'erreur
-	if err != nil {
-		fmt.Println("Erreur de l'ouverture des logs apache2 : ", err)
-		return
-	}
+		//si l'erreur n'est pas null alors on print l'erreur
+		if err != nil {
+			log.Println("Erreur de l'ouverture des logs apache2 : ", err)
+			return
+		}
 
-	//on ferme le fichier accesslog
-	defer accessLog.Close()
+		//on ferme le fichier accesslog
+		defer accessLog.Close()
 
-	//scanlog nous permet de faire un scan dans le fichier log
-	scanlog := bufio.NewScanner(accessLog)
+		//scanlog nous permet de faire un scan dans le fichier log
+		scanlog := bufio.NewScanner(accessLog)
 
-	//la boucle nous permettra de scanner les différentes ligne des logs
-	for scanlog.Scan() {
+		//la boucle nous permettra de scanner les différentes ligne des logs
+		for scanlog.Scan() {
 
-		//line récupère ces lignes sous forme de texte
-		line := scanlog.Text()
-		//fmt.Println(line)
-		re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
-		match := re.FindString(line)
-		fmt.Println(match)
+			//line récupère ces lignes sous forme de texte
+			line := scanlog.Text()
+			//log.Println(line)
+			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
+			match := re.FindString(line)
+			log.Println(match)
 
-		//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
-		if isSuspectLine(line, match) {
-			fmt.Println("Intrusion détéctée dans les logs : ", line)
-			//sendEmail()
+			//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
+			if isSuspectLine(line, match) {
+				log.Println("Intrusion détéctée dans les logs : ", line)
+				//sendEmail()
 
+			}
+		}
+
+		//en cas d'erreur cela affiche une erreur
+		if err := scanlog.Err(); err != nil {
+			log.Println("Erreur lors de la lecture du fichier de logs : ", err)
 		}
 	}
 
-	//en cas d'erreur cela affiche une erreur
-	if err := scanlog.Err(); err != nil {
-		fmt.Println("Erreur lors de la lecture du fichier de logs : ", err)
-	}
 }
