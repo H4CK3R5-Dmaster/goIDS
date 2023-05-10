@@ -210,8 +210,6 @@ func main() {
 			}
 			defer outputFile.Close()
 
-			defer outputFile.Close()
-
 			// Écrire les adresses IP uniques dans le fichier de sortie
 			writer := bufio.NewWriter(outputFile)
 			for ip := range ipList {
