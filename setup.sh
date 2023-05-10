@@ -4,6 +4,9 @@ GREEN="\033[0;32m"
 YELLOW="\033[1;33m"
 RED="\033[0;31m"
 NC="\033[0m"
+printf "${YELLOW}===================================================\n${NC}"
+printf "${YELLOW}||          SETUP Intrusion detect system        ||\n${NC}"
+printf "${YELLOW}===================================================\n${NC}"
 
 if ! command -v go &> /dev/null
 then
