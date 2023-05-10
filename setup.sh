@@ -20,7 +20,7 @@ mkdir /etc/IDS
 cp -r goIDS/ /etc/IDS
 
 printf "${YELLOW}Démarrage de /etc/IDS/goIDS/main.go...\n${NC}"
-go run /etc/IDS/goIDS/main.go
+
 
 printf "${YELLOW}Configuration du démarrage automatique de /etc/IDS/goIDS/main.go...\n${NC}"
 sudo tee /etc/systemd/system/IDSmain.service <<EOF
@@ -41,4 +41,7 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable IDSmain.service
 sudo systemctl start IDSmain.service
+go run /etc/IDS/goIDS/main.go &
 printf "${GREEN}Le démarrage automatique de /etc/IDS/goIDS/main.go a été configuré avec succès.\n${NC}"
+
+
