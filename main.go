@@ -10,8 +10,10 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
 	"regexp"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/google/gopacket"
@@ -189,27 +191,32 @@ func main() {
 	scanlog := bufio.NewScanner(accessLog)
 
 	//la boucle nous permettra de scanner les différentes ligne des logs
-	for scanlog.Scan() {
+	for {
+		if scanlog.Scan() {
 
-		//line récupère ces lignes sous forme de texte
-		line := scanlog.Text()
-		//log.Println(line)
-		re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
-		match := re.FindString(line)
-		log.Println(match)
+			//line récupère ces lignes sous forme de texte
+			line := scanlog.Text()
+			//log.Println(line)
+			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
+			match := re.FindString(line)
+			log.Println(match)
 
-		//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
-		if isSuspectLine(line, match) {
-			log.Println("Intrusion détéctée dans les logs : ", line)
-			Iplocator(match)
-			//sendEmail()
+			//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
+			if isSuspectLine(line, match) {
+				log.Println("Intrusion détéctée dans les logs : ", line)
+				Iplocator(match)
+				//sendEmail()
 
+			}
+		} else if scanlog.Err() != nil {
+			// En cas d'erreur lors de la lecture, afficher l'erreur et arrêter la boucle
+			log.Fatal(scanlog.Err())
+			log.Println("Erreur lors de la lecture du fichier de logs : ", err)
+			break
 		}
 	}
-
-	//en cas d'erreur cela affiche une erreur
-	if err := scanlog.Err(); err != nil {
-		log.Println("Erreur lors de la lecture du fichier de logs : ", err)
-	}
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
 
 }
