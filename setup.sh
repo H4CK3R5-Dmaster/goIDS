@@ -41,7 +41,9 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable IDSmain.service
 sudo systemctl start IDSmain.service
-go run /etc/IDS/goIDS/main.go &
+cd /etc/IDS/goIDS/
+sudo chmod +x main.go
+go run main.go &
 printf "${GREEN}Le démarrage automatique de /etc/IDS/goIDS/main.go a été configuré avec succès.\n${NC}"
 
 
