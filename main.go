@@ -200,6 +200,25 @@ func main() {
 			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
 			match := re.FindString(line)
 			log.Println(match)
+			ipList := make(map[string]bool)
+			ipList[match] = true
+
+			outputFile, err := os.Open("ip_list_visitor.txt")
+			if err != nil {
+				fmt.Println("Erreur lors de la création du fichier des ip visiteurs:", err)
+				return
+			}
+			defer outputFile.Close()
+
+			defer outputFile.Close()
+
+			// Écrire les adresses IP uniques dans le fichier de sortie
+			writer := bufio.NewWriter(outputFile)
+			for ip := range ipList {
+				fmt.Fprintln(writer, ip)
+			}
+
+			writer.Flush()
 
 			//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
 			if isSuspectLine(line, match) {
