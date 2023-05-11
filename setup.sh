@@ -15,7 +15,7 @@ then
     sudo apt-get install -y golang-go
     printf "${GREEN}Golang a été installé avec succès.\n${NC}"
 fi
-cd ..
+
 mkdir /etc/IDS
 cp -r goIDS/ /etc/IDS
 
