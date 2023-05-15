@@ -29,8 +29,13 @@ Description=IDSmain service
 
 [Service]
 Type=simple
+WorkingDirectory=/etc/IDS/goIDS/
+Environment=GO111MODULE=on
+Environment="GOPATH=${HOME}/go"
+Environment="GOMODCACHE=${HOME}/go/pkg/mod"
 Restart=always
 RestartSec=5s
+ExecStartPre=/usr/bin/go mod download
 ExecStart=/usr/bin/go run /etc/IDS/goIDS/main.go
 
 [Install]
