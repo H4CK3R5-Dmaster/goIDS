@@ -18,10 +18,7 @@ fi
 
 mkdir /etc/IDS
 cp -r goIDS/ /etc/IDS
-
 printf "${YELLOW}Démarrage de /etc/IDS/goIDS/main.go...\n${NC}"
-
-
 printf "${YELLOW}Configuration du démarrage automatique de /etc/IDS/goIDS/main.go...\n${NC}"
 sudo tee /etc/systemd/system/IDSmain.service <<EOF
 [Unit]
@@ -33,6 +30,9 @@ WorkingDirectory=/etc/IDS/goIDS/
 Environment=GO111MODULE=on
 Environment="GOPATH=${HOME}/go"
 Environment="GOMODCACHE=${HOME}/go/pkg/mod"
+
+Environment="GOCACHE=${HOME}/go"
+
 Restart=always
 RestartSec=5s
 ExecStartPre=/usr/bin/go mod download
@@ -42,13 +42,7 @@ ExecStart=/usr/bin/go run /etc/IDS/goIDS/main.go
 WantedBy=multi-user.target
 EOF
 
-
 sudo systemctl daemon-reload
 sudo systemctl enable IDSmain.service
 sudo systemctl start IDSmain.service
-cd /etc/IDS/goIDS/
-sudo chmod +x main.go
-go run main.go &
 printf "${GREEN}Le démarrage automatique de /etc/IDS/goIDS/main.go a été configuré avec succès.\n${NC}"
-
-
