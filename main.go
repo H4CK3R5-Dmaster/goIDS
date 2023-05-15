@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -14,10 +13,7 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
-	"time"
 
-	"github.com/google/gopacket"
-	"github.com/google/gopacket/pcap"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
@@ -49,23 +45,52 @@ type Iplocation struct {
 	Organization   string `json:"organization"`
 }
 
-func isSuspectLine(line string, ip string) bool {
+func isSuspectLine(line string) bool {
 
-	//maxcount := 3
+	maxcount := 5
+	ipcount := make(map[string]int)
 
-	//on regarde si notre string contient une erreur 401 après un POST depuis le login
-	if strings.Contains(line, "POST /auth/login/") && strings.Contains(line, "401") {
-		return true
-	}
+	for i := 1; i <= maxcount; i++ {
+		//on regarde si notre string contient une erreur 401 après un POST depuis le login
+		if strings.Contains(line, "POST /auth/login/") && strings.Contains(line, "401") {
+			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
+			match := re.FindString(line)
+			ipcount[match]++
 
-	//on check si notre string contient le mot sqlmap
-	if strings.Contains(line, "sqlmap") {
-		return true
-	}
+			if ipcount[match] == maxcount {
 
-	//on check si notre string contient le mot gobuster
-	if strings.Contains(line, "gobuster") {
-		return true
+				return true
+			}
+
+		}
+
+		//on check si notre string contient le mot sqlmap
+		if strings.Contains(line, "sqlmap") {
+
+			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
+			match := re.FindString(line)
+			ipcount[match]++
+
+			if ipcount[match] == maxcount {
+
+				return true
+			}
+
+		}
+
+		//on check si notre string contient le mot gobuster
+		if strings.Contains(line, "gobuster") {
+			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
+			match := re.FindString(line)
+			ipcount[match]++
+
+			if ipcount[match] == maxcount {
+
+				return true
+			}
+
+		}
+
 	}
 
 	return false
@@ -107,40 +132,6 @@ func sendEmail() {
 		fmt.Println(response.Headers)
 	}
 }
-func sniffer() {
-	var filter = flag.String("filter", "", "BPF filter for capture")
-	var iface = flag.String("iface", "ens33", "Select interface where to capture")
-	var snaplen = flag.Int("snaplen", 1024, "Maximun sise to read for each packet")
-	var promisc = flag.Bool("promisc", false, "Enable promiscuous mode")
-	var timeoutT = flag.Int("timeout", 30, "Connection Timeout in seconds")
-	log.Println("start")
-	defer log.Println("end")
-
-	flag.Parse()
-
-	var timeout time.Duration = time.Duration(*timeoutT) * time.Second
-
-	handle, err := pcap.OpenLive(*iface, int32(*snaplen), *promisc, timeout)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer handle.Close()
-
-	if *filter != "" {
-		log.Println("applying filter ", *filter)
-		err := handle.SetBPFFilter(*filter)
-		if err != nil {
-			log.Fatalf("error applyign BPF Filter %s - %v", *filter, err)
-		}
-	}
-
-	packetSource := gopacket.NewPacketSource(handle, handle.LinkType())
-
-	for packet := range packetSource.Packets() {
-		fmt.Println(packet)
-	}
-}
 
 func Iplocator(ip string) {
 	log.Println("call API...")
@@ -175,7 +166,7 @@ func main() {
 	exec.Command("clear")
 	//accessLog est notre variable qui contient le fichier log et err sera la variable d'erreur
 
-	accessLog, err := os.Open("/var/log/apache2/access.log")
+	accessLog, err := os.Open("./var/log/apache2/access.log")
 	//sniffer()
 
 	//si l'erreur n'est pas null alors on print l'erreur
@@ -188,44 +179,26 @@ func main() {
 	defer accessLog.Close()
 
 	//scanlog nous permet de faire un scan dans le fichier log
-	scanlog := bufio.NewScanner(accessLog)
 
 	//la boucle nous permettra de scanner les différentes ligne des logs
 	for {
-		if scanlog.Scan() {
+		scanlog := bufio.NewScanner(accessLog)
+		for scanlog.Scan() {
 
 			//line récupère ces lignes sous forme de texte
 			line := scanlog.Text()
 			//log.Println(line)
-			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
-			match := re.FindString(line)
-			log.Println(match)
-			ipList := make(map[string]bool)
-			ipList[match] = true
-
-			outputFile, err := os.Open("ip_list_visitor.txt")
-			if err != nil {
-				fmt.Println("Erreur lors de la création du fichier des ip visiteurs:", err)
-				return
-			}
-			defer outputFile.Close()
-
-			// Écrire les adresses IP uniques dans le fichier de sortie
-			writer := bufio.NewWriter(outputFile)
-			for ip := range ipList {
-				fmt.Fprintln(writer, ip)
-			}
-
-			writer.Flush()
 
 			//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
-			if isSuspectLine(line, match) {
+
+			if isSuspectLine(line) {
 				log.Println("Intrusion détéctée dans les logs : ", line)
-				Iplocator(match)
+				//Iplocator(match)
 				//sendEmail()
 
 			}
-		} else if scanlog.Err() != nil {
+		}
+		if scanlog.Err() != nil {
 			// En cas d'erreur lors de la lecture, afficher l'erreur et arrêter la boucle
 			log.Fatal(scanlog.Err())
 			log.Println("Erreur lors de la lecture du fichier de logs : ", err)
