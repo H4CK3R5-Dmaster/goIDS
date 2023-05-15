@@ -45,7 +45,6 @@ type Iplocation struct {
 	Organization   string `json:"organization"`
 }
 
-<<<<<<< HEAD
 func containsString(strs []string, str string) bool {
 	count := 0
 	for _, s := range strs {
@@ -81,23 +80,6 @@ func isSuspectLine(line string) bool {
 					return true
 				}
 
-=======
-func isSuspectLine(line string) bool {
-
-	maxcount := 5
-	ipcount := make(map[string]int)
-
-	for i := 1; i <= maxcount; i++ {
-		//on regarde si notre string contient une erreur 401 après un POST depuis le login
-		if strings.Contains(line, "POST /auth/login/") && strings.Contains(line, "401") {
-			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
-			match := re.FindString(line)
-			ipcount[match]++
-
-			if ipcount[match] == maxcount {
-
-				return true
->>>>>>> 451bece573654f0bb5bf18ea0b3c76cf47b64d88
 			}
 
 		}
@@ -107,7 +89,6 @@ func isSuspectLine(line string) bool {
 
 			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
 			match := re.FindString(line)
-<<<<<<< HEAD
 			count := len(ipcount[match])
 
 			if count >= maxcount {
@@ -117,13 +98,6 @@ func isSuspectLine(line string) bool {
 					return true
 				}
 
-=======
-			ipcount[match]++
-
-			if ipcount[match] == maxcount {
-
-				return true
->>>>>>> 451bece573654f0bb5bf18ea0b3c76cf47b64d88
 			}
 
 		}
@@ -132,7 +106,6 @@ func isSuspectLine(line string) bool {
 		if strings.Contains(line, "gobuster") {
 			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
 			match := re.FindString(line)
-<<<<<<< HEAD
 			count := len(ipcount[match])
 
 			if count >= maxcount {
@@ -142,13 +115,6 @@ func isSuspectLine(line string) bool {
 					return true
 				}
 
-=======
-			ipcount[match]++
-
-			if ipcount[match] == maxcount {
-
-				return true
->>>>>>> 451bece573654f0bb5bf18ea0b3c76cf47b64d88
 			}
 
 		}
