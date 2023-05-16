@@ -7,7 +7,6 @@ détecter les lignes suspect OK
 
 EN COURS :
 
-sniffer EN COURS
 Ban IP EN COURS
 
 
