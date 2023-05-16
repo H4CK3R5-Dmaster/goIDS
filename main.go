@@ -18,23 +18,6 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
-type EmailData struct {
-	Iptracked    string
-	Locatedip    []Located
-	Useragent    string
-	Browser      string
-	Warninglevel int
-}
-
-type Located struct {
-	Continent_code string
-	Continent_name string
-	Name_country   string
-	Code_country   string
-	City_name      string
-	Organiz        string
-}
-
 type Iplocation struct {
 	Ip             string `json:"ip"`
 	Code_continent string `json:"continent_code"`
@@ -76,7 +59,7 @@ func isSuspectLine(line string) bool {
 			if count >= maxcount {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "POST /auth/login/") && containsString(reqs, "401") {
-
+					Iplocator(match)
 					return true
 				}
 
@@ -94,7 +77,7 @@ func isSuspectLine(line string) bool {
 			if count >= maxcount {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "sqlmap") {
-
+					Iplocator(match)
 					return true
 				}
 
@@ -111,7 +94,7 @@ func isSuspectLine(line string) bool {
 			if count >= maxcount {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "gobuster") {
-
+					Iplocator(match)
 					return true
 				}
 
@@ -126,7 +109,7 @@ func isSuspectLine(line string) bool {
 			if count >= maxcount {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "Nikto") {
-
+					Iplocator(match)
 					return true
 				}
 
@@ -139,30 +122,62 @@ func isSuspectLine(line string) bool {
 	return false
 }
 
-func sendEmail() {
-	//from est la variable de l'expéditeur
-	from := mail.NewEmail("INTRUSION DETECTION SYSTEM", "sfekaier@gmail.com")
+func sendEmail(ip string, codecontinent string, namecontinent string, countrycode string, countryname string, city string, orga string) error {
 
-	//subject est la variable du sujet du mail
-	subject := "CODE RED ALERT : INTRUSION DETECTED"
+	dynamicData := make(map[string]interface{})
+	dynamicData["ip"] = ip
+	if codecontinent != "" {
+		dynamicData["codecontinent"] = codecontinent
+	} else {
+		dynamicData["codecontinent"] = ""
+	}
+	if namecontinent != "" {
+		dynamicData["namecontinent"] = namecontinent
+	} else {
+		dynamicData["namecontinent"] = ""
+	}
+	if countrycode != "" {
+		dynamicData["countrycode"] = countrycode
+	} else {
+		dynamicData["countrycode"] = ""
+	}
+	if countryname != "" {
+		dynamicData["countryname"] = countryname
+	} else {
+		dynamicData["countryname"] = ""
+	}
+	if city != "" {
+		dynamicData["city"] = city
+	} else {
+		dynamicData["city"] = ""
+	}
+	if orga != "" {
+		dynamicData["orga"] = orga
+	} else {
+		dynamicData["orga"] = ""
+	}
+
+	//client va utiliser l'API sendgrid et se préparer à l'envoie du mail
+	client := sendgrid.NewSendClient("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")
+	//from est la variable de l'expéditeur
+	from := mail.NewEmail("INTRUSION DETECTION SYSTEM", "seiffekaier@gmail.com")
 
 	//to est la variable du receveur
 	to := mail.NewEmail("IDS DEVELOPPERS", "sfekaier@gmail.com")
 
-	//plainTexteContent est la variable du corps du mail
-	plainTextContent := "Warning : check ids logs now"
-
-	//htmlContent est la variable du corps du mail mais avec du html
-	htmlContent := "<strong>It's a important message !</strong>"
-
 	//message est la variable qui réuni les variables en un mail
-	message := mail.NewSingleEmail(from, subject, to, plainTextContent, htmlContent)
+	message := mail.NewV3Mail()
 
-	//set une template dynamic
-	message.SetTemplateID("")
+	message.SetFrom(from)
+	message.SetTemplateID("d-708cc747c17d4091aa7519ed1c514fa7")
 
-	//client va utiliser l'API sendgrid et se préparer à l'envoie du mail
-	client := sendgrid.NewSendClient("")
+	perso := mail.NewPersonalization()
+	perso.AddTos(to)
+	for key, value := range dynamicData {
+		perso.SetDynamicTemplateData(key, value)
+	}
+
+	message.AddPersonalizations(perso)
 
 	//response va envoyer le mail grâce à la variable client
 	response, err := client.Send(message)
@@ -170,10 +185,15 @@ func sendEmail() {
 	if err != nil {
 		log.Println(err)
 	} else {
+		if response.StatusCode >= 400 {
+			log.Println("error")
+		}
 		fmt.Println(response.StatusCode)
 		fmt.Println(response.Body)
 		fmt.Println(response.Headers)
+		return nil
 	}
+	return nil
 }
 
 func Iplocator(ip string) {
@@ -201,6 +221,8 @@ func Iplocator(ip string) {
 	log.Println(responseObject.Country_code)
 	log.Println(responseObject.Country_name)
 	log.Println(responseObject.City)
+
+	sendEmail(responseObject.Ip, responseObject.Code_continent, responseObject.Name_continent, responseObject.Country_code, responseObject.Country_name, responseObject.City, responseObject.Organization)
 
 }
 
