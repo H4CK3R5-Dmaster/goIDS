@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"strings"
 	"syscall"
+	"time"
 
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -60,6 +61,17 @@ func isSuspectLine(line string) bool {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "POST /auth/login/") && containsString(reqs, "401") {
 					Iplocator(match)
+					exec.Command("firewall-cmd", "--direct", "--add-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "REJECT")
+					go func() {
+						time.Sleep(24 * time.Hour)
+
+						unblockCmd := exec.Command("firewall-cmd", "--direct", "--remove-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "ACCEPT")
+						if err := unblockCmd.Run(); err != nil {
+							fmt.Printf("Erreur lors de la suppression de la règle de blocage pour l'IP %s : %v\n", match, err)
+						} else {
+							fmt.Printf("IP %s débloquée\n", match)
+						}
+					}()
 					return true
 				}
 
@@ -78,6 +90,17 @@ func isSuspectLine(line string) bool {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "sqlmap") {
 					Iplocator(match)
+					exec.Command("firewall-cmd", "--direct", "--add-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "REJECT")
+					go func() {
+						time.Sleep(24 * time.Hour)
+
+						unblockCmd := exec.Command("firewall-cmd", "--direct", "--remove-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "ACCEPT")
+						if err := unblockCmd.Run(); err != nil {
+							fmt.Printf("Erreur lors de la suppression de la règle de blocage pour l'IP %s : %v\n", match, err)
+						} else {
+							fmt.Printf("IP %s débloquée\n", match)
+						}
+					}()
 					return true
 				}
 
@@ -95,6 +118,17 @@ func isSuspectLine(line string) bool {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "gobuster") {
 					Iplocator(match)
+					exec.Command("firewall-cmd", "--direct", "--add-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "REJECT")
+					go func() {
+						time.Sleep(24 * time.Hour)
+
+						unblockCmd := exec.Command("firewall-cmd", "--direct", "--remove-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "ACCEPT")
+						if err := unblockCmd.Run(); err != nil {
+							fmt.Printf("Erreur lors de la suppression de la règle de blocage pour l'IP %s : %v\n", match, err)
+						} else {
+							fmt.Printf("IP %s débloquée\n", match)
+						}
+					}()
 					return true
 				}
 
@@ -110,6 +144,17 @@ func isSuspectLine(line string) bool {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "Nikto") {
 					Iplocator(match)
+					exec.Command("firewall-cmd", "--direct", "--add-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "REJECT")
+					go func() {
+						time.Sleep(24 * time.Hour)
+
+						unblockCmd := exec.Command("firewall-cmd", "--direct", "--remove-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "ACCEPT")
+						if err := unblockCmd.Run(); err != nil {
+							fmt.Printf("Erreur lors de la suppression de la règle de blocage pour l'IP %s : %v\n", match, err)
+						} else {
+							fmt.Printf("IP %s débloquée\n", match)
+						}
+					}()
 					return true
 				}
 
@@ -243,10 +288,9 @@ func main() {
 	//on ferme le fichier accesslog
 	defer accessLog.Close()
 
-	//scanlog nous permet de faire un scan dans le fichier log
-
 	//la boucle nous permettra de scanner les différentes ligne des logs
 	for {
+		//scanlog nous permet de faire un scan dans le fichier log
 		scanlog := bufio.NewScanner(accessLog)
 		for scanlog.Scan() {
 
