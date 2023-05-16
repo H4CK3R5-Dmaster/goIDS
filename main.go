@@ -118,6 +118,21 @@ func isSuspectLine(line string) bool {
 			}
 
 		}
+		if strings.Contains(line, "Nikto") {
+			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
+			match := re.FindString(line)
+			count := len(ipcount[match])
+
+			if count >= maxcount {
+				reqs := ipcount[match][count-5:]
+				if containsString(reqs, "Nikto") {
+
+					return true
+				}
+
+			}
+
+		}
 
 	}
 
