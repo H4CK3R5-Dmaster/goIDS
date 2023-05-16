@@ -76,7 +76,7 @@ func isSuspectLine(line string) bool {
 			if count >= maxcount {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "POST /auth/login/") && containsString(reqs, "401") {
-					log.Println(line)
+
 					return true
 				}
 
@@ -94,7 +94,7 @@ func isSuspectLine(line string) bool {
 			if count >= maxcount {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "sqlmap") {
-					log.Println(line)
+
 					return true
 				}
 
@@ -111,7 +111,7 @@ func isSuspectLine(line string) bool {
 			if count >= maxcount {
 				reqs := ipcount[match][count-5:]
 				if containsString(reqs, "gobuster") {
-					log.Println(line)
+
 					return true
 				}
 
