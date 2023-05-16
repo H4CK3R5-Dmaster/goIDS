@@ -15,6 +15,13 @@ then
     sudo apt-get install -y golang-go
     printf "${GREEN}Golang a été installé avec succès.\n${NC}"
 fi
+if ! command -v firewalld &> /dev/null
+then
+    printf "${YELLOW}Firewalld n'est pas installé. Installation en cours...\n${NC}"
+    sudo apt-get update
+    sudo apt-get install -y firewalld
+    printf "${GREEN}Firewalld a été installé avec succès.\n${NC}"
+fi
 
 mkdir /etc/IDS
 cp -r goIDS/ /etc/IDS
