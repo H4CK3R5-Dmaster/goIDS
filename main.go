@@ -205,10 +205,10 @@ func sendEmail(ip string, codecontinent string, namecontinent string, countrycod
 	//client va utiliser l'API sendgrid et se préparer à l'envoie du mail
 	client := sendgrid.NewSendClient("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")
 	//from est la variable de l'expéditeur
-	from := mail.NewEmail("INTRUSION DETECTION SYSTEM", "seiffekaier@gmail.com")
+	from := mail.NewEmail("INTRUSION DETECTION SYSTEM", "seiffekaier@gmail.com") //ne pas changer l'email sender
 
 	//to est la variable du receveur
-	to := mail.NewEmail("IDS DEVELOPPERS", "sfekaier@gmail.com")
+	to := mail.NewEmail("IDS DEVELOPPERS", "(METTEZ VOTRE EMAIL ICI)")
 
 	//message est la variable qui réuni les variables en un mail
 	message := mail.NewV3Mail()
