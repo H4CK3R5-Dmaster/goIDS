@@ -273,11 +273,11 @@ func Iplocator(ip string) {
 
 func main() {
 
-	exec.Command("clear")
+	
 	//accessLog est notre variable qui contient le fichier log et err sera la variable d'erreur
 
 	accessLog, err := os.Open("/var/log/apache2/access.log")
-	//sniffer()
+	
 
 	//si l'erreur n'est pas null alors on print l'erreur
 	if err != nil {
@@ -296,14 +296,12 @@ func main() {
 
 			//line récupère ces lignes sous forme de texte
 			line := scanlog.Text()
-			//log.Println(line)
+			
 
 			//si la fonction isSuspectLine retourne vrai cela affiche la line d'intrusion suspecté avec l'ip et etc
 
 			if isSuspectLine(line) {
 				log.Println("Intrusion détéctée dans les logs : ", line)
-				//Iplocator(match)
-				//sendEmail()
 
 			}
 		}
