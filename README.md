@@ -13,9 +13,9 @@ Contient les systèmes suivants :
 * Envoies des mails 
 <br>
 Cependant le système n'est qu'une mvp et aura d'autres versions par la suite.
+<br>
 
-
-## Démarrage :
+## DEMARRAGE :
 
 Avant toutes choses veuillez mettre votre email dans la fonction sendEmail à la place de (Mettez votre email ici) :
 
@@ -28,8 +28,20 @@ Avant toutes choses veuillez mettre votre email dans la fonction sendEmail à la
 	//on set l'expediteur
 	message.SetFrom(from)
 ```
+--------------------------------------------------------------------------------
 
-## SOURCES :
+Afin d'utiliser le programme veuillez à ce que setup.sh soit installé et fait pour cela suivez les étapes :
+
+1. Executez chmod +x afin de lui donner les droits
+```bash
+sudo chmod +x setup.sh
+```
+2. Puis executez setup.sh :
+```bash
+sudo bash setup.sh
+```
+
+## RESOURCES :
 
 - [pkg.go.dev (gopacket)](https://pkg.go.dev/github.com/google/gopacket)
 - [devdungeon](https://www.devdungeon.com/content/packet-capture-injection-and-analysis-gopacket)
