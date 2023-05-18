@@ -5,7 +5,8 @@
 </p>
 Le système de détection d'intrusion a été créée dans un but d'un projet cybersec. 
 Munie d'un expéditeur de mail l'utilisateur pourra       recevoir une alerte depuis ses mails. 
-
+<br>
+Cependant le système n'est qu'une mvp et aura d'autres versions par la suite.
 ## SOURCES :
 
 - [pkg.go.dev (gopacket)](https://pkg.go.dev/github.com/google/gopacket)
