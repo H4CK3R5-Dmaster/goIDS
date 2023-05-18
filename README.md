@@ -6,7 +6,27 @@
 Le système de détection d'intrusion a été créée dans un but d'un projet cybersec. 
 Munie d'un expéditeur de mail l'utilisateur pourra       recevoir une alerte depuis ses mails. 
 <br>
+Contient les systèmes suivants :
+* Lecture d'access.log 
+* Retrouve les lignes suspectes en cas de brute force ou autres
+* Ipgéolocalisation
+* Envoies des mails 
+<br>
 Cependant le système n'est qu'une mvp et aura d'autres versions par la suite.
+
+## Démarrage :
+
+Avant toutes choses veuillez mettre votre email dans la fonction sendEmail à la place de (Mettez votre email ici) :
+
+```
+	//to est la variable du receveur
+	to := mail.NewEmail("IDS DEVELOPPERS", "(METTEZ VOTRE EMAIL ICI)")
+
+	//message est la variable qui utilise la v3 de sendgrid
+	message := mail.NewV3Mail()
+	//on set l'expediteur
+	message.SetFrom(from)
+```
 
 ## SOURCES :
 
