@@ -19,6 +19,7 @@ import (
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
 )
 
+//création de la structure Iplocation
 type Iplocation struct {
 	Ip             string `json:"ip"`
 	Code_continent string `json:"continent_code"`
@@ -29,6 +30,9 @@ type Iplocation struct {
 	Organization   string `json:"organization"`
 }
 
+/* prend en entrée une slice de chaînes de caractères (strs) et 
+une chaîne de caractères (str) à rechercher. Elle renvoie true si str est 
+contenu dans au moins cinq éléments de strs, sinon elle renvoie false */
 func containsString(strs []string, str string) bool {
 	count := 0
 	for _, s := range strs {
