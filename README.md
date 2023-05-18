@@ -7,10 +7,10 @@ Le système de détection d'intrusion a été créée dans un but d'un projet cy
 Munie d'un expéditeur de mail l'utilisateur pourra       recevoir une alerte depuis ses mails. 
 <br>
 Contient les systèmes suivants : <br>
-..* Lecture d'access.log 
-- Retrouve les lignes suspectes en cas de brute force ou autres
-- Ipgéolocalisation
-- Envoies des mails 
+1. Lecture d'access.log 
+2. Retrouve les lignes suspectes en cas de brute force ou autres
+3. Ipgéolocalisation
+4. Envoies des mails 
 
 <br>
 Cependant le système n'est qu'une mvp et aura d'autres versions par la suite.
