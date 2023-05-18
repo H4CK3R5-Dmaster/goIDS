@@ -14,11 +14,12 @@ Contient les systèmes suivants :
 <br>
 Cependant le système n'est qu'une mvp et aura d'autres versions par la suite.
 
+
 ## Démarrage :
 
 Avant toutes choses veuillez mettre votre email dans la fonction sendEmail à la place de (Mettez votre email ici) :
 
-```
+```golang
 	//to est la variable du receveur
 	to := mail.NewEmail("IDS DEVELOPPERS", "(METTEZ VOTRE EMAIL ICI)")
 
