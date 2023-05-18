@@ -46,6 +46,7 @@ func containsString(strs []string, str string) bool {
 	return false
 }
 
+//permet de détecter toutes requêtes suspectes
 func isSuspectLine(line string) bool {
 	//max 5 requêtes
 	maxcount := 5
@@ -186,11 +187,12 @@ func isSuspectLine(line string) bool {
 
 	return false
 }
-
+//permet d'envoyer un mail avec les données de l'IP
 func sendEmail(ip string, codecontinent string, namecontinent string, countrycode string, countryname string, city string, orga string) error {
-
+	
 	dynamicData := make(map[string]interface{})
 	dynamicData["ip"] = ip
+	//vérification si les paramètres sont vide ou pas
 	if codecontinent != "" {
 		dynamicData["codecontinent"] = codecontinent
 	} else {
@@ -222,7 +224,7 @@ func sendEmail(ip string, codecontinent string, namecontinent string, countrycod
 		dynamicData["orga"] = ""
 	}
 
-	//client va utiliser l'API sendgrid et se préparer à l'envoie du mail
+	//client va utiliser l'API key sendgrid et se préparer à l'envoie du mail
 	client := sendgrid.NewSendClient("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")
 	//from est la variable de l'expéditeur
 	from := mail.NewEmail("INTRUSION DETECTION SYSTEM", "seiffekaier@gmail.com") //ne pas changer l'email sender
@@ -230,18 +232,21 @@ func sendEmail(ip string, codecontinent string, namecontinent string, countrycod
 	//to est la variable du receveur
 	to := mail.NewEmail("IDS DEVELOPPERS", "(METTEZ VOTRE EMAIL ICI)")
 
-	//message est la variable qui réuni les variables en un mail
+	//message est la variable qui utilise la v3 de sendgrid
 	message := mail.NewV3Mail()
-
+	//on set l'expediteur
 	message.SetFrom(from)
+	//on set l'ID d'une template
 	message.SetTemplateID("d-708cc747c17d4091aa7519ed1c514fa7")
-
+	//on ajoute une petite personnalisation
 	perso := mail.NewPersonalization()
+	//on ajoute le receveur
 	perso.AddTos(to)
+	//pour chaque key - value de dynamicData on set les variables dynamiques du mail
 	for key, value := range dynamicData {
 		perso.SetDynamicTemplateData(key, value)
 	}
-
+	//message va récupérer toute la personnalisation
 	message.AddPersonalizations(perso)
 
 	//response va envoyer le mail grâce à la variable client
@@ -260,24 +265,27 @@ func sendEmail(ip string, codecontinent string, namecontinent string, countrycod
 	}
 	return nil
 }
-
+//permet de geolocaliser l'ip suspectes et envoyer les données à sendEmail
 func Iplocator(ip string) {
 	log.Println("call API...")
+	//apiKy de iplocation
 	apikey := "08ce3f5b88fa4d0d9c2b601afecdc350"
+	//on prépare une requête get pour récupérer les données
 	response, err := http.Get("https://api.ipgeolocation.io/ipgeo?apiKey=" + apikey + "&ip=" + ip)
 
 	if err != nil {
 		log.Println("error : ", err)
 	}
-
+	//on read la totalité des résultats du body de http
 	responseData, err := ioutil.ReadAll(response.Body)
 
 	if err != nil {
 		log.Println("error : ", err)
 	}
-
+	//on créer une variable de type Iplocation
 	var responseObject Iplocation
-
+	
+	//est utilisée pour décoder (ou désérialiser) des données JSON contenues dans la variable responseData et les stocker dans une variable de type structuré responseObject
 	json.Unmarshal(responseData, &responseObject)
 
 	log.Println(responseObject.Ip)
@@ -286,16 +294,15 @@ func Iplocator(ip string) {
 	log.Println(responseObject.Country_code)
 	log.Println(responseObject.Country_name)
 	log.Println(responseObject.City)
-
+	//appelles sendEmail et donne en paramètre les données de l'ip
 	sendEmail(responseObject.Ip, responseObject.Code_continent, responseObject.Name_continent, responseObject.Country_code, responseObject.Country_name, responseObject.City, responseObject.Organization)
 
 }
-
+//fonction principal où tout démarre
 func main() {
 
 	
 	//accessLog est notre variable qui contient le fichier log et err sera la variable d'erreur
-
 	accessLog, err := os.Open("/var/log/apache2/access.log")
 	
 
@@ -305,7 +312,7 @@ func main() {
 		return
 	}
 
-	//on ferme le fichier accesslog
+	//on retarde la fermeture d'accessLog
 	defer accessLog.Close()
 
 	//la boucle nous permettra de scanner les différentes ligne des logs
