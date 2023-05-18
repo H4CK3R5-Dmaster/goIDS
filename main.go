@@ -47,25 +47,31 @@ func containsString(strs []string, str string) bool {
 }
 
 func isSuspectLine(line string) bool {
-
+	//max 5 requêtes
 	maxcount := 5
+	
+	//map pour récuperer les ip
 	ipcount := make(map[string][]string)
 
 	for i := 1; i <= maxcount; i++ {
 		re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
-		match := re.FindString(line)
+		match := re.FindString(line) //récupére les IP qui match avec le regex
 
-		ipcount[match] = append(ipcount[match], line)
+		ipcount[match] = append(ipcount[match], line) // ajout des ip et leurs requêtes
+		
 		//on regarde si notre string contient une erreur 401 après un POST depuis le login
 		if strings.Contains(line, "POST /auth/login/") && strings.Contains(line, "401") {
 
-			count := len(ipcount[match])
-
-			if count >= maxcount {
-				reqs := ipcount[match][count-5:]
+			count := len(ipcount[match]) // count est égale à la taille de ipcount 
+			
+			//si count est supérieur ou égale à 5
+			if count >= maxcount { 
+				reqs := ipcount[match][count-5:] //récupére les 5 derniers slices de l'ip
 				if containsString(reqs, "POST /auth/login/") && containsString(reqs, "401") {
-					Iplocator(match)
+					Iplocator(match) //renvoies à la fonction pour géolocaliser l'ip
+					//execute une règle ACL
 					exec.Command("firewall-cmd", "--direct", "--add-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "REJECT")
+					//permet de débannir l'ip après 24h
 					go func() {
 						time.Sleep(24 * time.Hour)
 
@@ -87,14 +93,17 @@ func isSuspectLine(line string) bool {
 		if strings.Contains(line, "sqlmap") {
 
 			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
-			match := re.FindString(line)
-			count := len(ipcount[match])
+			match := re.FindString(line)//récupére les IP qui match avec le regex
+			count := len(ipcount[match])// count est égale à la taille de ipcount 
 
+			//si count est supérieur ou égale à 5
 			if count >= maxcount {
-				reqs := ipcount[match][count-5:]
+				reqs := ipcount[match][count-5:] //récupére les 5 derniers slices de l'ip
 				if containsString(reqs, "sqlmap") {
-					Iplocator(match)
+					Iplocator(match) //fonction de géolocalisation
+					//mise en place règle ACL
 					exec.Command("firewall-cmd", "--direct", "--add-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "REJECT")
+					//débannir l'ip après 24h
 					go func() {
 						time.Sleep(24 * time.Hour)
 
@@ -115,14 +124,17 @@ func isSuspectLine(line string) bool {
 		//on check si notre string contient le mot gobuster
 		if strings.Contains(line, "gobuster") {
 			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
-			match := re.FindString(line)
-			count := len(ipcount[match])
+			match := re.FindString(line)//récupére les IP qui match avec le regex
+			count := len(ipcount[match]) // count est égale à la taille de ipcount 
 
+			//si count est égale à 5
 			if count >= maxcount {
-				reqs := ipcount[match][count-5:]
+				reqs := ipcount[match][count-5:] //recupère les 5 derniers slices de l'ip
 				if containsString(reqs, "gobuster") {
-					Iplocator(match)
+					Iplocator(match)//géolocalisation
+					//règle ACL
 					exec.Command("firewall-cmd", "--direct", "--add-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "REJECT")
+					//débannir après 24h
 					go func() {
 						time.Sleep(24 * time.Hour)
 
@@ -139,16 +151,20 @@ func isSuspectLine(line string) bool {
 			}
 
 		}
+		//on check si notre string contient le mot Nikto
 		if strings.Contains(line, "Nikto") {
 			re := regexp.MustCompile(`\b(?:\d{1,3}\.){3}\d{1,3}\b`) // expression régulière pour récupérer l'adresse IP
-			match := re.FindString(line)
-			count := len(ipcount[match])
+			match := re.FindString(line) //récupére les IP qui match avec le regex
+			count := len(ipcount[match]) //count est égale à la taille de ipcount de l'ip
 
+			// count est égale à 5
 			if count >= maxcount {
-				reqs := ipcount[match][count-5:]
+				reqs := ipcount[match][count-5:] // on récupère les 5 derniers slices de l'ip
 				if containsString(reqs, "Nikto") {
-					Iplocator(match)
+					Iplocator(match)//géolocalisation
+					//règle ACL
 					exec.Command("firewall-cmd", "--direct", "--add-rule", "ipv4", "filter", "INPUT", "1", "-m", "tcp", "--source", match, "-p", "tcp", "--dport", "80", "-j", "REJECT")
+					//débannir après 24h
 					go func() {
 						time.Sleep(24 * time.Hour)
 
